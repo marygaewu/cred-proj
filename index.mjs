@@ -6,10 +6,16 @@ dotenv.config();
 (async() => {
     const reachStdlib = await loadStdlib(process.env);
     const [Admin, Organization, Student] = await reachStdlib.newTestAccount(reachStdlib.parceCurrency(100));
-    const contract = Student.contract(backend);
+    const contract = Admin.contract(backend);
+    contract.getInfo().then(info => {
+        console.log(info);
+    });
 
-    const [meta, upload] = reachStdlib.newBytes(256);
-    const [okay,want] = reachStdlib.newBool();
+
+    // const meta = reachStdlib.newBytes(256);
+    // const upload = reachStdlib.newBytes(96);
+    // const [okay,want] = reachStdlib.newBool();
+
 
 
 })();
