@@ -4,7 +4,7 @@ export const main = Reach.App(() => {
   setOptions({ untrustworthyMaps: true });
   const Admin = Participant('Admin', {
     meta: Bytes(256),
-    upload: Bytes(256),
+    upload: Bytes(96),
   });
   const Organization = ParticipantClass('Organization', {
     request: Fun([], Bool),
@@ -28,19 +28,21 @@ export const main = Reach.App(() => {
   // XXX expose holdersM.member as a view
 
   var [] = [];
-  invariant( balance() == 0 );
+
+  const [Organization] = parallelReduce([Student
+    ]).define(()=>{
+      const want = declassify(interact.request());
+      assume(! holdersM.member(this));
+    }).invariant(balance() == 0)
+
   while ( true ) {
     commit();
 
     // XXX Right now, the students and admin interact in a synchronized manner.
-    // Instead, students could be free to add themselves to the "wantM" set (if
-    // they aren't in holdersM) and the admin can come in later and move things
+    // Instead, organizations could be free to add themselves to the "wantM" set (if
+    // they aren't in holdersM) and the student can come in later and move things
     // from "wantM" to "holdersM"
 
-    Organization.only(() => {
-      const want = declassify(interact.request());
-      assume(! holdersM.member(this));
-    });
     Organization.publish().when(want).timeout(false);
     const requester = this;
     require(! holdersM.member(requester));
